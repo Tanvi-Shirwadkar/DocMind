@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DocMind — RAG Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <!-- ANIMATED BACKGROUND -->
+    <div id="large-header" class="large-header">
+      <canvas id="demo-canvas"></canvas>
+    </div>
+
+    <!-- Noise overlay -->
+    <div class="noise"></div>
+
+    <!-- ═══════════════════ LANDING / UPLOAD VIEW ═══════════════════ -->
+    <div id="landing" class="view active">
+      <header class="landing-header">
+        <div class="wordmark">Doc<em>Mind</em></div>
+        <div class="header-pills">
+          <span class="pill pill--rag">RAG</span>
+          <span class="pill pill--faiss">FAISS</span>
+          <span class="pill pill--llm">LLM</span>
+        </div>
+      </header>
+
+      <main class="landing-main">
+        <div class="hero">
+          <div class="hero-eyebrow">Retrieval-Augmented Generation</div>
+          <h1 class="hero-title">
+            Drop a doc.<br />
+            <em>Get answers.</em>
+          </h1>
+          <p class="hero-sub">
+            Real FAISS vector search · MiniLM embeddings · Grounded LLM
+            responses
+          </p>
+        </div>
+
+        <!-- Upload zone -->
+        <div class="upload-wrap">
+          <div class="upload-zone" id="uploadZone">
+            <input
+              type="file"
+              id="fileInput"
+              accept=".txt,.pdf,.md,.py,.js,.ts,.html,.css,.json,.csv"
+            />
+            <div class="upload-inner">
+              <div class="upload-orbit">
+                <div class="orbit-ring ring-1"></div>
+                <div class="orbit-ring ring-2"></div>
+                <div class="orbit-ring ring-3"></div>
+                <div class="orbit-core">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
+                    <path
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4-4-4 4M12 8v8"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div class="upload-text">
+                <strong>Drop your document here</strong>
+                <span>PDF, TXT, MD, PY, JS, TS, HTML · or click to browse</span>
+              </div>
+            </div>
+            <div class="upload-hover-glow"></div>
+          </div>
+        </div>
+
+        <!-- Pipeline steps (animated in) -->
+        <div class="pipeline-preview">
+          <div class="pp-step" style="--d: 0ms">
+            <div class="pp-icon">✦</div>
+            <div class="pp-label">Chunk</div>
+          </div>
+          <div class="pp-arrow">→</div>
+          <div class="pp-step" style="--d: 80ms">
+            <div class="pp-icon">⬡</div>
+            <div class="pp-label">Embed</div>
+          </div>
+          <div class="pp-arrow">→</div>
+          <div class="pp-step" style="--d: 160ms">
+            <div class="pp-icon">⌖</div>
+            <div class="pp-label">FAISS Index</div>
+          </div>
+          <div class="pp-arrow">→</div>
+          <div class="pp-step" style="--d: 240ms">
+            <div class="pp-icon">◎</div>
+            <div class="pp-label">Search</div>
+          </div>
+          <div class="pp-arrow">→</div>
+          <div class="pp-step" style="--d: 320ms">
+            <div class="pp-icon">✧</div>
+            <div class="pp-label">Generate</div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ═══════════════════ PROCESSING VIEW ═══════════════════ -->
+    <div id="processing" class="view">
+      <div class="proc-center">
+        <div class="proc-glyph">
+          <div class="proc-ring"></div>
+          <div class="proc-ring proc-ring--2"></div>
+          <span class="proc-symbol">⬡</span>
+        </div>
+        <div class="proc-label" id="procLabel">Extracting text…</div>
+        <div class="proc-steps">
+          <div class="proc-step" id="ps-extract">
+            <div class="proc-step-dot"></div>
+            <span>Text extraction</span>
+          </div>
+          <div class="proc-step" id="ps-chunk">
+            <div class="proc-step-dot"></div>
+            <span>Chunking document</span>
+          </div>
+          <div class="proc-step" id="ps-embed">
+            <div class="proc-step-dot"></div>
+            <span>Generating embeddings (MiniLM)</span>
+          </div>
+          <div class="proc-step" id="ps-faiss">
+            <div class="proc-step-dot"></div>
+            <span>Building FAISS index</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ CHAT / APP VIEW ═══════════════════ -->
+    <div id="app" class="view">
+      <!-- Top bar -->
+      <div class="app-topbar">
+        <button class="back-btn" onclick="resetApp()">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          New document
+        </button>
+        <div class="doc-badge" id="docBadge">—</div>
+        <div class="app-pills">
+          <span class="pill pill--sm" id="chunkCount">0 chunks</span>
+          <span class="pill pill--sm" id="tokenCount">0 tokens</span>
+        </div>
+      </div>
+
+      <div class="app-body">
+        <!-- Left: chunk sidebar -->
+        <aside class="chunk-sidebar">
+          <div class="sidebar-head">
+            <span class="sidebar-title">Vector Index</span>
+            <span class="sidebar-sub" id="totalChunks">—</span>
+          </div>
+          <div class="chunk-scroll" id="chunkScroll">
+            <div class="chunk-empty">Run a query to see retrieved chunks</div>
+          </div>
+        </aside>
+
+        <!-- Right: chat -->
+        <section class="chat-section">
+          <!-- Pipeline status bar -->
+          <div class="rag-pipeline" id="ragPipeline">
+            <div class="rp-node" id="rp-query">Query embed</div>
+            <div class="rp-arrow">→</div>
+            <div class="rp-node" id="rp-search">FAISS search</div>
+            <div class="rp-arrow">→</div>
+            <div class="rp-node" id="rp-context">Context build</div>
+            <div class="rp-arrow">→</div>
+            <div class="rp-node" id="rp-llm">LLM generate</div>
+            <div class="rp-arrow">→</div>
+            <div class="rp-node" id="rp-answer">Answer</div>
+          </div>
+
+          <!-- Messages -->
+          <div class="messages" id="messages">
+            <div class="welcome-msg">
+              <div class="wm-title">
+                Document indexed <span class="wm-check">✓</span>
+              </div>
+              <div class="wm-sub" id="wmSub">
+                Ask anything about your document
+              </div>
+            </div>
+          </div>
+
+          <!-- Input -->
+          <div class="suggestions">
+            <p class="suggest-title">Try asking:</p>
+            <div class="suggest-list">
+              <span class="suggest-pill">Summarize this document</span>
+              <span class="suggest-pill">What are the key insights?</span>
+              <span class="suggest-pill">What are the main concepts?</span>
+            </div>
+          </div>
+          <div class="input-dock">
+            <div class="input-wrap">
+              <textarea
+                id="queryInput"
+                class="query-field"
+                placeholder="Ask a question about your document…"
+                rows="1"
+              ></textarea>
+              <button class="send-btn" id="sendBtn" onclick="sendQuery()">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+              </button>
+            </div>
+            <div class="input-meta" id="inputMeta">
+              Enter to send · Shift+Enter for new line
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- GSAP (REQUIRED FOR ANIMATION) -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenLite.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/easing/EasePack.min.js"></script>
+
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>
