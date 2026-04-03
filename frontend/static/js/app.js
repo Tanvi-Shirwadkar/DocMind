@@ -1,11 +1,11 @@
-// DocMind — Frontend 
+// DocMind — Frontend
 
 const API = ""; // same origin — FastAPI serves frontend
 
 // ── State ──
 let currentDoc = null;
 
-// ── Background canvas 
+// ── Background canvas
 (function () {
   var width,
     height,
@@ -34,7 +34,6 @@ let currentDoc = null;
     canvas.height = height;
     ctx = canvas.getContext("2d");
 
-   
     points = [];
     for (var x = 0; x < width; x = x + width / 20) {
       for (var y = 0; y < height; y = y + height / 20) {
@@ -229,7 +228,6 @@ function showView(id) {
 // ── File upload  ──
 const uploadZone = document.getElementById("uploadZone");
 const fileInput = document.getElementById("fileInput");
-
 
 uploadZone.addEventListener("click", (e) => {
   fileInput.click();
