@@ -1,11 +1,11 @@
-// DocMind — Frontend Logic
+// DocMind — Frontend 
 
 const API = ""; // same origin — FastAPI serves frontend
 
 // ── State ──
 let currentDoc = null;
 
-// ── Background canvas (animated particle field) ──
+// ── Background canvas 
 (function () {
   var width,
     height,
@@ -34,7 +34,7 @@ let currentDoc = null;
     canvas.height = height;
     ctx = canvas.getContext("2d");
 
-    // create points
+   
     points = [];
     for (var x = 0; x < width; x = x + width / 20) {
       for (var y = 0; y < height; y = y + height / 20) {
@@ -45,7 +45,7 @@ let currentDoc = null;
       }
     }
 
-    // for each point find the 5 closest points
+    // for each point finding the 5 closest points
     for (var i = 0; i < points.length; i++) {
       var closest = [];
       var p1 = points[i];
@@ -75,7 +75,7 @@ let currentDoc = null;
       p1.closest = closest;
     }
 
-    // assign a circle to each point
+    // assigning a circle to each point
     for (var i in points) {
       var c = new Circle(
         points[i],
@@ -226,11 +226,11 @@ function showView(id) {
   }
 }
 
-// ── File upload (CLEAN VERSION) ──
+// ── File upload  ──
 const uploadZone = document.getElementById("uploadZone");
 const fileInput = document.getElementById("fileInput");
 
-// CLICK → open file picker
+
 uploadZone.addEventListener("click", (e) => {
   fileInput.click();
 });
@@ -307,7 +307,7 @@ async function handleFile(file) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || "Upload failed");
 
-    // mark all steps done
+    // marking all steps done
     steps.forEach(
       (s) => (document.getElementById(s).className = "proc-step done"),
     );
@@ -331,7 +331,7 @@ function enterApp(meta) {
   document.getElementById("wmSub").textContent =
     `${meta.chunks} chunks indexed from "${meta.filename}"`;
 
-  // Reset messages to just welcome
+  // Reset messages
   document.getElementById("messages").innerHTML = `
     <div class="welcome-msg">
       <div class="wm-title">Indexed <span class="wm-check">✓</span></div>
@@ -420,7 +420,7 @@ async function sendQuery() {
   addMessage("user", q);
   const loadId = addLoading();
 
-  // Run pipeline animation concurrently
+  // Running pipeline animation concurrently
   const pipePromise = animatePipeline();
 
   try {
