@@ -8,7 +8,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
-#from anthropic import Anthropic
 import google.generativeai as genai
 from dotenv import load_dotenv
 import pdfplumber
