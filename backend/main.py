@@ -132,12 +132,21 @@ async def query_document(req: QueryRequest):
     )
     if model is None:
         return {
-            "answer": "AI not configured yet",
+            "answer": "AI not configured. Showing retrieved context instead:\n\n" + context[:1000],
             "sources": results
         }
-    response = model.generate_content(
+        response = model.generate_content(
+        #To generate hallucination control and grounded responses
         f"""
-        You are a precise technical assistant. Answer the question using ONLY the context.
+        You are an intelligent document assistant.
+
+        STRICT RULES:
+        - Answer ONLY using the provided context.
+        - Do NOT use outside knowledge.
+        - If the answer is not in the context, say: "The document does not contain this information."
+        - Be concise, clear, and accurate.
+        - If possible, cite chunk numbers.
+        
 
         CONTEXT:
         {context}
@@ -146,15 +155,14 @@ async def query_document(req: QueryRequest):
         {req.query}
         """
     )
+    answer = response.text.strip()
+    if not answer:
+        answer = "No clear answer found in the document for this query."
     return {
-        "answer": response.text,
+        "answer": answer,
         "sources": results
     }
-
-
-
-
-
+    
 
 @app.get("/api/status")
 async def status():
@@ -164,14 +172,11 @@ async def status():
         "total_chunks": len(chunks_store),
     }
 
-
-
 app.mount(
     "/static",
     StaticFiles(directory=os.path.join(BASE_DIR, "../frontend/static")),
     name="static"
 )
-
 
 @app.get("/")
 async def root():
