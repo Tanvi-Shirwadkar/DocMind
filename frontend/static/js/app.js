@@ -280,7 +280,18 @@ async function handleFile(file) {
       document.getElementById(steps[stepIdx - 1]).className = "proc-step done";
 
     if (stepIdx < steps.length) {
-      document.getElementById(steps[stepIdx]).className = "proc-step active";
+      const prev = document.getElementById(steps[stepIdx - 1]);
+      if (prev) prev.className = "proc-step done";
+
+      const current = document.getElementById(steps[stepIdx]);
+      if (current) {
+         current.className = "proc-step active";
+       }
+
+      const label = document.getElementById("procLabel");
+        if (label) {
+          label.textContent = labels[stepIdx];
+       }
       document.getElementById("procLabel").textContent = labels[stepIdx];
       stepIdx++;
     }
@@ -306,9 +317,11 @@ async function handleFile(file) {
     if (!res.ok) throw new Error(data.detail || "Upload failed");
 
     // marking all steps done
-    steps.forEach(
-      (s) => (document.getElementById(s).className = "proc-step done"),
-    );
+    steps.forEach((s) => {
+     const el = document.getElementById(s);
+     if (el) el.className = "proc-step done";
+    });
+    
 
     await sleep(500);
 
