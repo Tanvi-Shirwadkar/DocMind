@@ -71,11 +71,11 @@ http://127.0.0.1:8000
 
 ## 📽 Demo
 
-(Add your video link here)
+https://drive.google.com/file/d/14NH4_qZCwHnO8vOFaNNgz4twDxpqGgAw/view?usp=sharing
 
 ## 📄 Report
 
-(Add PDF link here)
+https://docs.google.com/document/d/1FphFwJa8H89bE5g53QM2C3INcUz5JBRuQSLDE6i7lCI/edit?tab=t.0#heading=h.hrhaaw11mz2
 
 ---
 
