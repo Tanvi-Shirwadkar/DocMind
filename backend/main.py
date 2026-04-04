@@ -135,7 +135,7 @@ async def query_document(req: QueryRequest):
             "answer": "AI not configured. Showing retrieved context instead:\n\n" + context[:1000],
             "sources": results
         }
-        response = model.generate_content(
+    response = model.generate_content(
         #To generate hallucination control and grounded responses
         f"""
         You are an intelligent document assistant.
